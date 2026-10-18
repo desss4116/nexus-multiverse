@@ -1,0 +1,35 @@
+name: Build BLACKSITE OPERATOR APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build with Unity
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          projectPath: .
+          unityVersion: 2022.3.20f1
+          targetPlatform: Android
+          buildsPath: build
+          buildName: BLACKSITE_OPERATOR
+          allowDirtyBuild: true
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BLACKSITE-OPERATOR-APK
+          path: build/Android/*.apk
+          if-no-files-found: error
+          retention-days: 14
